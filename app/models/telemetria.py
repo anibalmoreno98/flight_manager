@@ -1,9 +1,8 @@
 
 
-from dataclasses import Field
 from typing import Optional
 
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, Field
 
 
 class Telemetria(SQLModel, table=True):
