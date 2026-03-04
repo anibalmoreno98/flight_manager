@@ -15,22 +15,22 @@ from app.services.aeronave_service import (
 
 router = APIRouter(prefix="/aeronaves", tags=["aeronaves"])
 
-@router.post("/", response_model=Aeronave)
+@router.post("/", response_model=Aeronave, status_code=201)
 def create_aeronave(aeronave: Aeronave, session: Session = Depends(get_sesion)):
     return create_aeronave_service(aeronave, session)
 
-@router.get("/", response_model=List[Aeronave])
+@router.get("/", response_model=List[Aeronave], status_code=200)
 def read_aeronaves(session: Session = Depends(get_sesion)):
     return list_aeronaves_service(session)
 
-@router.get("/{aeronave_id}", response_model=Aeronave)
+@router.get("/{aeronave_id}", response_model=Aeronave, status_code=200)
 def read_aeronave(aeronave_id: int, session: Session = Depends(get_sesion)):
     return get_aeronave_service(aeronave_id, session)
 
-@router.put("/{aeronave_id}", response_model=Aeronave)
+@router.put("/{aeronave_id}", response_model=Aeronave, status_code=200)
 def update_aeronave(aeronave_id: int, aeronave: Aeronave, session: Session = Depends(get_sesion)):
     return update_aeronave_service(aeronave_id, aeronave, session)
 
-@router.delete("/{aeronave_id}")
+@router.delete("/{aeronave_id}", status_code=204)
 def delete_aeronave(aeronave_id: int, session: Session = Depends(get_sesion)):
     return delete_aeronave_service(aeronave_id, session)

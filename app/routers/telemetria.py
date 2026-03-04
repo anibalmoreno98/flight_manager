@@ -15,22 +15,22 @@ from app.services.telemetria_service import (
 
 router = APIRouter(prefix="/telemetrias", tags=["telemetrias"])
 
-@router.post("/", response_model=Telemetria)
+@router.post("/", response_model=Telemetria, status_code=201)
 def create_telemetria(telemetria: Telemetria, session: Session = Depends(get_sesion)):
     return create_telemetria_service(telemetria, session)
 
-@router.get("/", response_model=List[Telemetria])
+@router.get("/", response_model=List[Telemetria], status_code=200)
 def read_telemetrias(session: Session = Depends(get_sesion)):
     return list_telemetria_service(session)
 
-@router.get("/{telemetria_id}", response_model=Telemetria)
+@router.get("/{telemetria_id}", response_model=Telemetria, status_code=200)
 def read_telemetria(telemetria_id: int, session: Session = Depends(get_sesion)):
     return get_telemetria_service(telemetria_id, session)
 
-@router.put("/{telemetria_id}", response_model=Telemetria)
+@router.put("/{telemetria_id}", response_model=Telemetria, status_code=200)
 def update_telemetria(telemetria_id: int, telemetria: Telemetria, session: Session = Depends(get_sesion)):
     return update_telemetria_service(telemetria_id, telemetria, session)
 
-@router.delete("/{telemetria_id}")
+@router.delete("/{telemetria_id}", status_code=204)
 def delete_telemetria(telemetria_id: int, session: Session = Depends(get_sesion)):
     return delete_telemetria_service(telemetria_id, session)
