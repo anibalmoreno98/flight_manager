@@ -11,6 +11,6 @@ class Vuelo(SQLModel, table=True):
     nombre: str
     piloto: int = Field(foreign_key="usuario.id")
     aeronave: int = Field(foreign_key="aeronave.id")
-    telemetria: int = Field(foreign_key="telemetria.id")
+    telemetria: Optional[int] = Field(default=None, foreign_key="telemetria.id")
     fecha_inicio: datetime
     fecha_fin: datetime

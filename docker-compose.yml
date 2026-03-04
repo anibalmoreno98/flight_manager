@@ -29,13 +29,21 @@ services:
       context: .
       dockerfile: ./docker/Dockerfile
     container_name: fastapi_flights
-    restart: always
+    # use restart=unless-stopped or remove in dev so container isn't constantly reborn
+    restart: unless-stopped
     ports:
       - "8000:8000"
     depends_on:
       - db
     volumes:
-      - ./app:/app
+      # mount whole project so any code change (modules, routers, etc.) triggers reload
+      - ./:/app
+    environment:
+      # make sure Python can import the package from /app
+      - PYTHONPATH=/app
+      # on Docker for Windows/Mac polling may be needed for filesystem events
+      - WATCHGOD_USE_POLLING=1
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app
 
 volumes:
   postgres_data:
