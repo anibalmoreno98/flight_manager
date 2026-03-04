@@ -15,22 +15,22 @@ from app.services.usuario_service import (
 
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
-@router.post("/", response_model=Usuario)
+@router.post("/", response_model=Usuario, status_code=201)
 def create_usuario(usuario: Usuario, session: Session = Depends(get_sesion)):
     return create_usuario_service(usuario, session)
 
-@router.get("/", response_model=List[Usuario])
+@router.get("/", response_model=List[Usuario], status_code=200)
 def read_usuarios(session: Session = Depends(get_sesion)):
     return list_usuarios_service(session)
 
-@router.get("/{usuario_id}", response_model=Usuario)
+@router.get("/{usuario_id}", response_model=Usuario, status_code=200)
 def read_usuario(usuario_id: int, session: Session = Depends(get_sesion)):
     return get_usuario_service(usuario_id, session)
 
-@router.put("/{usuario_id}", response_model=Usuario)
+@router.put("/{usuario_id}", response_model=Usuario, status_code=200)
 def update_usuario(usuario_id: int, usuario: Usuario, session: Session = Depends(get_sesion)):
     return update_usuario_service(usuario_id, usuario, session)
 
-@router.delete("/{usuario_id}")
+@router.delete("/{usuario_id}", status_code=204)
 def delete_usuario(usuario_id: int, session: Session = Depends(get_sesion)):
     return delete_usuario_service(usuario_id, session)

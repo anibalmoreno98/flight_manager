@@ -15,22 +15,22 @@ from app.services.piloto_service import (
 
 router = APIRouter(prefix="/pilotos", tags=["pilotos"])
 
-@router.post("/", response_model=Piloto)
+@router.post("/", response_model=Piloto, status_code=201)
 def create_piloto(piloto: Piloto, session: Session = Depends(get_sesion)):
     return create_piloto_service(piloto, session)
 
-@router.get("/", response_model=List[Piloto])
+@router.get("/", response_model=List[Piloto], status_code=200)
 def read_pilotos(session: Session = Depends(get_sesion)):
     return list_pilotos_service(session)
 
-@router.get("/{piloto_id}", response_model=Piloto)
+@router.get("/{piloto_id}", response_model=Piloto, status_code=200)
 def read_piloto(piloto_id: int, session: Session = Depends(get_sesion)):
     return get_piloto_service(piloto_id, session)
 
-@router.put("/{piloto_id}", response_model=Piloto)
+@router.put("/{piloto_id}", response_model=Piloto, status_code=200)
 def update_piloto(piloto_id: int, piloto: Piloto, session: Session = Depends(get_sesion)):
     return update_piloto_service(piloto_id, piloto, session)
 
-@router.delete("/{piloto_id}")
+@router.delete("/{piloto_id}", status_code=204)
 def delete_piloto(piloto_id: int, session: Session = Depends(get_sesion)):
     return delete_piloto_service(piloto_id, session)
