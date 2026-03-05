@@ -4,7 +4,9 @@ from fastapi import HTTPException
 from app.models.usuario import Usuario
 from app.repositories import usuario as usuario_repo
 
-
+# esta funcion
+# recoge las variables del router
+# y las pasa al repositorio para crear un nuevo usuario
 def create_usuario_service(usuario: Usuario, session: Session):
     return usuario_repo.add(session, usuario)
 
