@@ -1,6 +1,4 @@
 
-import pytest
-
 from app.models.usuario import Usuario
 from app.repositories import usuario as usuario_repo
 
