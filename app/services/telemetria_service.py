@@ -5,7 +5,7 @@ from app.models.telemetria import Telemetria
 from app.repositories import telemetria as telemetria_repo
 
 
-def create_telemetria_service(telemetria: Telemetria, session: Session):
+def create_telemetria_service(telemetria: Telemetria, session: Session,repo=telemetria_repo):
     return telemetria_repo.add(session, telemetria)
 
 
