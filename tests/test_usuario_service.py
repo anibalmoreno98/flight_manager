@@ -1,7 +1,5 @@
 from unittest.mock import Mock
 
-import pytest
-
 from app.services.usuario_service import create_usuario_service, get_usuario_service, list_usuarios_service, update_usuario_service # traemos el service.usuario_service
 from app.models.usuario import Usuario # traemos el modelo de usuario para crear instancias de usuario en las pruebas
 

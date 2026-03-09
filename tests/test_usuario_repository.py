@@ -1,6 +1,4 @@
 
-import pytest
-
 from app.models.usuario import Usuario
 from app.repositories import usuario as usuario_repo
 
@@ -35,4 +33,3 @@ def test_list_all_usuarios(session):
     assert len(resultado) == 2
     assert resultado[0].nombre == "Ana"
     assert resultado[1].nombre == "Luis"
-    

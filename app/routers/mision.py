@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
-from app.database import get_sesion
+from app.database import get_session
 from app.models.mision import Mision
 from app.services.mision_service import (
     create_mision_service,
@@ -16,21 +16,21 @@ from app.services.mision_service import (
 router = APIRouter(prefix="/misiones", tags=["misiones"])
 
 @router.post("/", response_model=Mision)
-def create_mision(mision: Mision, session: Session = Depends(get_sesion)):
+def create_mision(mision: Mision, session: Session = Depends(get_session)):
     return create_mision_service(mision, session)
 
 @router.get("/", response_model=List[Mision])
-def read_misiones(session: Session = Depends(get_sesion)):
+def read_misiones(session: Session = Depends(get_session)):
     return list_misiones_service(session)
 
 @router.get("/{mision_id}", response_model=Mision)
-def read_mision(mision_id: int, session: Session = Depends(get_sesion)):
+def read_mision(mision_id: int, session: Session = Depends(get_session)):
     return get_mision_service(mision_id, session)
 
 @router.put("/{mision_id}", response_model=Mision)
-def update_mision(mision_id: int, mision: Mision, session: Session = Depends(get_sesion)):
+def update_mision(mision_id: int, mision: Mision, session: Session = Depends(get_session)):
     return update_mision_service(mision_id, mision, session)
 
 @router.delete("/{mision_id}")
-def delete_mision(mision_id: int, session: Session = Depends(get_sesion)):
+def delete_mision(mision_id: int, session: Session = Depends(get_session)):
     return delete_mision_service(mision_id, session)
