@@ -4,6 +4,8 @@ from fastapi import HTTPException
 from app.models.usuario import Usuario
 from app.repositories import usuario as usuario_repo
 
+
+
 def create_usuario_service(usuario: Usuario, session: Session, repo=usuario_repo):
     return repo.add(session, usuario)
 

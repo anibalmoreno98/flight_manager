@@ -2,25 +2,27 @@ import os
 os.environ["TESTING"] = "1"
 
 import pytest
+
+# 1. Importar engine de test y set_engine ANTES de cargar la app
+from tests.assets.db_test import engine as test_engine, create_test_db, get_test_session
+from app.database import set_engine, get_session
+
+# 2. Forzar que FastAPI use el engine de test ANTES de cargar la app
+set_engine(test_engine)
+
+# 3. Ahora sí, importar la app
 from fastapi.testclient import TestClient
-from sqlmodel import SQLModel, create_engine, Session
 from app.main import app
-from app.database import get_session
+
 
 @pytest.fixture(scope="function")
 def client():
-    # 1. Crear engine SQLite en memoria
-    engine = create_engine("sqlite:///:memory:")
+    # Crear tablas en el engine de test
+    create_test_db()
 
-    # 2. Sobrescribir get_session
-    def override_get_session():
-        # Crear tablas justo antes de abrir la asesión
-        SQLModel.metadata.create_all(engine)
-        with Session(engine) as session:
-            yield session
+    # Override de sesión
+    app.dependency_overrides[get_session] = get_test_session
 
-    app.dependency_overrides[get_session] = override_get_session
-
-    # 4. Crear cliente
+    # Crear cliente
     with TestClient(app) as c:
         yield c

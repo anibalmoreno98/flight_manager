@@ -5,6 +5,10 @@ DATABASE_URL = "postgresql+psycopg2://admin:admin@db:5432/flights"
 # el engine se crea una sola vez y se reutiliza para todas las sesiones
 engine = None
 
+def set_engine(test_engine):
+    global engine
+    engine = test_engine
+
 def get_engine():
     global engine
     if engine is None:

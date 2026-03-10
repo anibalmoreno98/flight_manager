@@ -4,6 +4,7 @@ from sqlmodel import Session, select
 from app.models.usuario import Usuario
 
 
+
 def add(session: Session, usuario: Usuario) -> Usuario:
     session.add(usuario)
     session.commit()
