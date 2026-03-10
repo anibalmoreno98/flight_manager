@@ -5,15 +5,19 @@ from app.services.aeronave_service import create_aeronave_service, get_aeronave_
 from unittest.mock import Mock
 
 def test_create_aeronave_service():
-    repo = Mock()
+    repo = Mock() # mock de la CLASE repositoro
+    repo_instance = repo.return_value # mock de la INSTANCIA del repositorio
     session = Mock()
+
     # la aeronave la creamos, pero la session y el repo lo mockeamos
     aeronave = Aeronave(id=1, fabricante="Boeing", modelo="747", numero_serie="12345", velocidad_maxima=900.0)
 
-    repo.add.return_value = Aeronave(id=1, fabricante="Boeing")
+    repo_instance.add.return_value = aeronave
 
     resultado = create_aeronave_service(aeronave, session, repo=repo)
-    repo.add.assert_called_once_with(session, aeronave)
+
+    repo.assert_called_once_with(session) # el servicio instancio el repo
+    repo_instance.add.assert_called_once_with(aeronave) # el metodo add fue llamado 
 
     assert resultado.id == 1
 

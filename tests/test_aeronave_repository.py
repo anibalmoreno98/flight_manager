@@ -1,6 +1,4 @@
 
-# vamos a probar el metodo de add aeronave
-
 # importamos el modelo aeronave y el repositorio de aeronave
 from app.repositories import aeronave as aeronave_repo
 from app.models.aeronave import Aeronave
