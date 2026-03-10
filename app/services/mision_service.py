@@ -12,22 +12,26 @@ def create_mision_service(mision: Mision, session: Session, repo=mision_repo):
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    return repo.add(session, mision)
+    repo_instance = repo.MisionRepository(session)
+    return repo_instance.add(mision)
 
 
 def get_mision_service(mision_id: int, session: Session, repo=mision_repo):
-    mision = repo.get(session, mision_id)
+    repo_instance = repo.MisionRepository(session)
+    mision = repo_instance.get(mision_id)
     if not mision:
         raise HTTPException(status_code=404, detail="Mision no encontrada")
     return mision
 
 
 def list_misiones_service(session: Session, repo=mision_repo):
-    return repo.list_all(session)
+    repo_instance = repo.MisionRepository(session)
+    return repo_instance.list_all()
 
 
 def update_mision_service(mision_id: int, mision_data: Mision, session: Session, repo=mision_repo):
-    mision = repo.get(session, mision_id)
+    repo_instance = repo.MisionRepository(session)
+    mision = repo_instance.get(mision_id)
     if not mision:
         raise HTTPException(status_code=404, detail="Mision no encontrada")
 
@@ -37,13 +41,14 @@ def update_mision_service(mision_id: int, mision_data: Mision, session: Session,
     mision.fecha_fin = mision_data.fecha_fin
     mision.creado_por = mision_data.creado_por
 
-    return repo.update(session, mision)
+    return repo_instance.update(mision)
 
 
 def delete_mision_service(mision_id: int, session: Session, repo=mision_repo):
-    mision = repo.get(session, mision_id)
+    repo_instance = repo.MisionRepository(session)
+    mision = repo_instance.get(mision_id)
     if not mision:
         raise HTTPException(status_code=404, detail="Mision no encontrada")
 
-    repo.delete(session, mision)
+    repo_instance.delete(mision)
     return {"ok": True}

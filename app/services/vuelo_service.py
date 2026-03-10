@@ -10,19 +10,23 @@ def create_vuelo_service(vuelo: Vuelo, session: Session, repo=vuelo_repo):
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario (piloto) no encontrado")
 
-    return repo.add(session, vuelo)
+    repo_instance = repo.VueloRepository(session)
+    return repo_instance.add(vuelo)
 
 def get_vuelo_service(vuelo_id: int, session: Session, repo=vuelo_repo):
-    vuelo = repo.get(session, vuelo_id)
+    repo_instance = repo.VueloRepository(session)
+    vuelo = repo_instance.get(vuelo_id)
     if not vuelo:
         raise HTTPException(status_code=404, detail="Vuelo no encontrado")
     return vuelo
 
 def list_vuelos_service(session: Session, repo=vuelo_repo):
-    return repo.list_all(session)
+    repo_instance = repo.VueloRepository(session)
+    return repo_instance.list_all()
 
 def update_vuelo_service(vuelo_id: int, vuelo_data: Vuelo, session: Session, repo=vuelo_repo):
-    vuelo = repo.get(session, vuelo_id)
+    repo_instance = repo.VueloRepository(session)
+    vuelo = repo_instance.get(vuelo_id)
     if not vuelo:
         raise HTTPException(status_code=404, detail="Vuelo no encontrado")
 
@@ -34,12 +38,13 @@ def update_vuelo_service(vuelo_id: int, vuelo_data: Vuelo, session: Session, rep
     vuelo.aeronave = vuelo_data.aeronave
     vuelo.telemetria = vuelo_data.telemetria
 
-    return vuelo_repo.update(session, vuelo)
+    return repo_instance.update(vuelo)
 
 def delete_vuelo_service(vuelo_id: int, session: Session, repo=vuelo_repo):
-    vuelo = repo.get(session, vuelo_id)
+    repo_instance = repo.VueloRepository(session)
+    vuelo = repo_instance.get(vuelo_id)
     if not vuelo:
         raise HTTPException(status_code=404, detail="Vuelo no encontrado")
 
-    repo.delete(session, vuelo)
+    repo_instance.delete(vuelo)
     return {"ok": True}

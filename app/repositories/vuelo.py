@@ -1,37 +1,36 @@
-from typing import List, Optional
+from typing import List
 from sqlmodel import Session, select
 
 from app.models.vuelo import Vuelo
 
+class VueloRepository:
+    def __init__(self, session: Session):
+        self.session = session
 
-def add(session: Session, vuelo: Vuelo) -> Vuelo:
-    session.add(vuelo)
-    session.commit()
-    session.refresh(vuelo)
-    return vuelo
+    def add(self, vuelo: Vuelo) -> Vuelo:
+        self.session.add(vuelo)
+        self.session.commit()
+        self.session.refresh(vuelo)
+        return vuelo
 
+    def get(self, vuelo_id: int) -> Vuelo | None:
+        return self.session.get(Vuelo, vuelo_id)
 
-def get(session: Session, vuelo_id: int) -> Optional[Vuelo]:
-    return session.get(Vuelo, vuelo_id)
+    def list_all(self) -> List[Vuelo]:
+        return self.session.exec(select(Vuelo)).all()
 
+    def update(self, vuelo: Vuelo) -> Vuelo:
+        self.session.add(vuelo)
+        self.session.commit()
+        self.session.refresh(vuelo)
+        return vuelo
 
-def list_all(session: Session) -> List[Vuelo]:
-    return session.exec(select(Vuelo)).all()
+    def delete(self, vuelo: Vuelo) -> None:
+        self.session.delete(vuelo)
+        self.session.commit()
 
+    # additional helpers
 
-def update(session: Session, vuelo: Vuelo) -> Vuelo:
-    session.add(vuelo)
-    session.commit()
-    session.refresh(vuelo)
-    return vuelo
-
-
-def delete(session: Session, vuelo: Vuelo) -> None:
-    session.delete(vuelo)
-    session.commit()
-
-# additional helpers
-
-def list_by_piloto(session: Session, piloto_id: int) -> List[Vuelo]:
-    statement = select(Vuelo).where(Vuelo.piloto == piloto_id)
-    return session.exec(statement).all()
+    def list_by_piloto(self, piloto_id: int) -> List[Vuelo]:
+        statement = select(Vuelo).where(Vuelo.piloto == piloto_id)
+        return self.session.exec(statement).all()

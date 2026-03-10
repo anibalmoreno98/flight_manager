@@ -6,35 +6,40 @@ from app.repositories import telemetria as telemetria_repo
 
 
 def create_telemetria_service(telemetria: Telemetria, session: Session, repo=telemetria_repo):
-    return repo.add(session, telemetria)
+    repo_instance = repo.TelemetriaRepository(session)
+    return repo_instance.add(telemetria)
 
 
 def get_telemetria_service(telemetria_id: int, session: Session, repo=telemetria_repo):
-    tele = repo.get(session, telemetria_id)
-    if not tele:
+    repo_instance = repo.TelemetriaRepository(session)
+    telemetria = repo_instance.get(telemetria_id)
+    if not telemetria:
         raise HTTPException(status_code=404, detail="Telemetria no encontrada")
-    return tele
+    return telemetria
 
 
 def list_telemetria_service(session: Session, repo=telemetria_repo):
-    return repo.list_all(session)
+    repo_instance = repo.TelemetriaRepository(session)
+    return repo_instance.list_all()
 
 
 def update_telemetria_service(telemetria_id: int, telemetria_data: Telemetria, session: Session, repo=telemetria_repo):
-    tele = repo.get(session, telemetria_id)
-    if not tele:
+    repo_instance = repo.TelemetriaRepository(session)
+    telemetria = repo_instance.get(telemetria_id)
+    if not telemetria:
         raise HTTPException(status_code=404, detail="Telemetria no encontrada")
 
-    tele.altura_maxima = telemetria_data.altura_maxima
-    tele.velocidad_maxima = telemetria_data.velocidad_maxima
+    telemetria.altura_maxima = telemetria_data.altura_maxima
+    telemetria.velocidad_maxima = telemetria_data.velocidad_maxima
 
-    return repo.update(session, tele)
+    return repo_instance.update(telemetria)
 
 
 def delete_telemetria_service(telemetria_id: int, session: Session, repo=telemetria_repo):
-    tele = repo.get(session, telemetria_id)
-    if not tele:
+    repo_instance = repo.TelemetriaRepository(session)
+    telemetria = repo_instance.get(telemetria_id)
+    if not telemetria:
         raise HTTPException(status_code=404, detail="Telemetria no encontrada")
 
-    repo.delete(session, tele)
+    repo_instance.delete(telemetria)
     return {"ok": True}
