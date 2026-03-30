@@ -10,6 +10,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # copy the application code; will be overridden by a volume mount in development
 COPY app ./app
 
-# run the server pointing at the correct module and enable reload on /app
-# use reload-dir to make sure the watcher sees changes inside the mounted volume
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/app"]
+# Expose FastAPI port
+EXPOSE 8000
+
+# Default command (docker-compose override will replace this in dev)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

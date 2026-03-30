@@ -2,41 +2,46 @@ from sqlmodel import Session
 from fastapi import HTTPException
 
 from app.models.aeronave import Aeronave
-from app.repositories import aeronave as aeronave_repo
+from app.repositories.aeronave import AeronaveRepository
+
+class AeronaveService:
+
+    def __init__(self, session: Session):
+        self.session = session
+        self.repo = AeronaveRepository(session)
+
+    def create_aeronave_service(self, aeronave: Aeronave) -> Aeronave:
+        return self.repo.add(aeronave)
 
 
-def create_aeronave_service(aeronave: Aeronave, session: Session, repo=aeronave_repo):
-    return repo.add(session, aeronave)
+    def get_aeronave_service(self, aeronave_id: int) -> Aeronave:
+        aeronave = self.repo.get(aeronave_id)
+        if not aeronave:
+            raise HTTPException(status_code=404, detail="Aeronave no encontrada")
+        return aeronave
 
 
-def get_aeronave_service(aeronave_id: int, session: Session, repo=aeronave_repo):
-    aeronave = repo.get(session, aeronave_id)
-    if not aeronave:
-        raise HTTPException(status_code=404, detail="Aeronave no encontrada")
-    return aeronave
+    def list_aeronaves_service(self) -> list[Aeronave]:
+        return self.repo.list_all()
 
 
-def list_aeronaves_service(session: Session, repo=aeronave_repo):
-    return repo.list_all(session)
+    def update_aeronave_service(self, aeronave_id: int, aeronave_data: Aeronave) -> Aeronave:
+        aeronave = self.repo.get(aeronave_id)
+        if not aeronave:
+            raise HTTPException(status_code=404, detail="Aeronave no encontrada")
+
+        aeronave.fabricante = aeronave_data.fabricante
+        aeronave.modelo = aeronave_data.modelo
+        aeronave.numero_serie = aeronave_data.numero_serie
+        aeronave.velocidad_maxima = aeronave_data.velocidad_maxima
+
+        return self.repo.update(aeronave)
 
 
-def update_aeronave_service(aeronave_id: int, aeronave_data: Aeronave, session: Session, repo=aeronave_repo):
-    aeronave = repo.get(session, aeronave_id)
-    if not aeronave:
-        raise HTTPException(status_code=404, detail="Aeronave no encontrada")
+    def delete_aeronave_service(self, aeronave_id: int) -> dict[str, bool]:
+        aeronave = self.repo.get(aeronave_id)
+        if not aeronave:
+            raise HTTPException(status_code=404, detail="Aeronave no encontrada")
 
-    aeronave.fabricante = aeronave_data.fabricante
-    aeronave.modelo = aeronave_data.modelo
-    aeronave.numero_serie = aeronave_data.numero_serie
-    aeronave.velocidad_maxima = aeronave_data.velocidad_maxima
-
-    return repo.update(session, aeronave)
-
-
-def delete_aeronave_service(aeronave_id: int, session: Session, repo=aeronave_repo):
-    aeronave = repo.get(session, aeronave_id)
-    if not aeronave:
-        raise HTTPException(status_code=404, detail="Aeronave no encontrada")
-
-    repo.delete(session, aeronave)
-    return {"ok": True}
+        self.repo.delete(aeronave)
+        return {"ok": True}

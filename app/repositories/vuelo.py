@@ -3,35 +3,38 @@ from sqlmodel import Session, select
 
 from app.models.vuelo import Vuelo
 
+class VueloRepository:
 
-def add(session: Session, vuelo: Vuelo) -> Vuelo:
-    session.add(vuelo)
-    session.commit()
-    session.refresh(vuelo)
-    return vuelo
+    def __init__(self, session: Session):
+        self.session = session
 
-
-def get(session: Session, vuelo_id: int) -> Optional[Vuelo]:
-    return session.get(Vuelo, vuelo_id)
-
-
-def list_all(session: Session) -> List[Vuelo]:
-    return session.exec(select(Vuelo)).all()
+    def add(self, vuelo: Vuelo) -> Vuelo:
+        self.session.add(vuelo)
+        self.session.commit()
+        self.session.refresh(vuelo)
+        return vuelo
 
 
-def update(session: Session, vuelo: Vuelo) -> Vuelo:
-    session.add(vuelo)
-    session.commit()
-    session.refresh(vuelo)
-    return vuelo
+    def get(self, vuelo_id: int) -> Optional[Vuelo]:
+        return self.session.get(Vuelo, vuelo_id)
 
 
-def delete(session: Session, vuelo: Vuelo) -> None:
-    session.delete(vuelo)
-    session.commit()
+    def list_all(self) -> List[Vuelo]:
+        return self.session.exec(select(Vuelo)).all()
 
-# additional helpers
 
-def list_by_piloto(session: Session, piloto_id: int) -> List[Vuelo]:
-    statement = select(Vuelo).where(Vuelo.piloto == piloto_id)
-    return session.exec(statement).all()
+    def update(self, vuelo: Vuelo) -> Vuelo:
+        self.session.add(vuelo)
+        self.session.commit()
+        self.session.refresh(vuelo)
+        return vuelo
+
+
+    def delete(self, vuelo: Vuelo) -> None:
+        self.session.delete(vuelo)
+        self.session.commit()
+
+
+    def list_by_piloto(self, piloto_id: int) -> List[Vuelo]:
+        statement = select(Vuelo).where(Vuelo.piloto == piloto_id)
+        return self.session.exec(statement).all()

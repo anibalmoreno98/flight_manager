@@ -3,29 +3,33 @@ from sqlmodel import Session, select
 
 from app.models.telemetria import Telemetria
 
+class TelemetriaRepository:
 
-def add(session: Session, tele: Telemetria) -> Telemetria:
-    session.add(tele)
-    session.commit()
-    session.refresh(tele)
-    return tele
+    def __init__(self, session: Session):
+        self.session = session
 
-
-def get(session: Session, telemetria_id: int) -> Telemetria | None:
-    return session.get(Telemetria, telemetria_id)
-
-
-def list_all(session: Session) -> List[Telemetria]:
-    return session.exec(select(Telemetria)).all()
+    def add(self, tele: Telemetria) -> Telemetria:
+        self.session.add(tele)
+        self.session.commit()
+        self.session.refresh(tele)
+        return tele
 
 
-def update(session: Session, tele: Telemetria) -> Telemetria:
-    session.add(tele)
-    session.commit()
-    session.refresh(tele)
-    return tele
+    def get(self, telemetria_id: int) -> Telemetria | None:
+        return self.session.get(Telemetria, telemetria_id)
 
 
-def delete(session: Session, tele: Telemetria) -> None:
-    session.delete(tele)
-    session.commit()
+    def list_all(self) -> List[Telemetria]:
+        return self.session.exec(select(Telemetria)).all()
+
+
+    def update(self, tele: Telemetria) -> Telemetria:
+        self.session.add(tele)
+        self.session.commit()
+        self.session.refresh(tele)
+        return tele
+
+
+    def delete(self, tele: Telemetria) -> None:
+        self.session.delete(tele)
+        self.session.commit()

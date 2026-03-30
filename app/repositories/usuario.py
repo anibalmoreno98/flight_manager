@@ -3,29 +3,33 @@ from sqlmodel import Session, select
 
 from app.models.usuario import Usuario
 
+class UsuarioRepository:
 
-def add(session: Session, usuario: Usuario) -> Usuario:
-    session.add(usuario)
-    session.commit()
-    session.refresh(usuario)
-    return usuario
+    def __init__(self, session: Session):
+        self.session = session
 
-
-def get(session: Session, usuario_id: int) -> Usuario | None:
-    return session.get(Usuario, usuario_id)
-
-
-def list_all(session: Session) -> List[Usuario]:
-    return session.exec(select(Usuario)).all()
+    def add(self, usuario: Usuario) -> Usuario:
+        self.session.add(usuario)
+        self.session.commit()
+        self.session.refresh(usuario)
+        return usuario
 
 
-def update(session: Session, usuario: Usuario) -> Usuario:
-    session.add(usuario)
-    session.commit()
-    session.refresh(usuario)
-    return usuario
+    def get(self, usuario_id: int) -> Usuario | None:
+        return self.session.get(Usuario, usuario_id)
 
 
-def delete(session: Session, usuario: Usuario) -> None:
-    session.delete(usuario)
-    session.commit()
+    def list_all(self) -> List[Usuario]:
+        return self.session.exec(select(Usuario)).all()
+
+
+    def update(self, usuario: Usuario) -> Usuario:
+        self.session.add(usuario)
+        self.session.commit()
+        self.session.refresh(usuario)
+        return usuario
+
+
+    def delete(self, usuario: Usuario) -> None:
+        self.session.delete(usuario)
+        self.session.commit()

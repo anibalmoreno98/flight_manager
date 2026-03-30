@@ -3,29 +3,33 @@ from sqlmodel import Session, select
 
 from app.models.piloto import Piloto
 
+class  PilotoRepository:
 
-def add(session: Session, piloto: Piloto) -> Piloto:
-    session.add(piloto)
-    session.commit()
-    session.refresh(piloto)
-    return piloto
+    def __init__(self, session: Session):
+        self.session = session
 
-
-def get(session: Session, piloto_id: int) -> Piloto | None:
-    return session.get(Piloto, piloto_id)
-
-
-def list_all(session: Session) -> List[Piloto]:
-    return session.exec(select(Piloto)).all()
+    def add(self, piloto: Piloto) -> Piloto:
+        self.session.add(piloto)
+        self.session.commit()
+        self.session.refresh(piloto)
+        return piloto
 
 
-def update(session: Session, piloto: Piloto) -> Piloto:
-    session.add(piloto)
-    session.commit()
-    session.refresh(piloto)
-    return piloto
+    def get(self, piloto_id: int) -> Piloto | None:
+        return self.session.get(Piloto, piloto_id)
 
 
-def delete(session: Session, piloto: Piloto) -> None:
-    session.delete(piloto)
-    session.commit()
+    def list_all(self) -> List[Piloto]:
+        return self.session.exec(select(Piloto)).all()
+
+
+    def update(self, piloto: Piloto) -> Piloto:
+        self.session.add(piloto)
+        self.session.commit()
+        self.session.refresh(piloto)
+        return piloto
+
+
+    def delete(self, piloto: Piloto) -> None:
+        self.session.delete(piloto)
+        self.session.commit()

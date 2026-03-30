@@ -3,29 +3,33 @@ from sqlmodel import Session, select
 
 from app.models.mision import Mision
 
+class MisionRepository:
 
-def add(session: Session, mision: Mision) -> Mision:
-    session.add(mision)
-    session.commit()
-    session.refresh(mision)
-    return mision
+    def __init__(self, session: Session):
+        self.session = session
 
-
-def get(session: Session, mision_id: int) -> Mision | None:
-    return session.get(Mision, mision_id)
-
-
-def list_all(session: Session) -> List[Mision]:
-    return session.exec(select(Mision)).all()
+    def add(self, mision: Mision) -> Mision:
+        self.session.add(mision)
+        self.session.commit()
+        self.session.refresh(mision)
+        return mision
 
 
-def update(session: Session, mision: Mision) -> Mision:
-    session.add(mision)
-    session.commit()
-    session.refresh(mision)
-    return mision
+    def get(self, mision_id: int) -> Mision | None:
+        return self.session.get(Mision, mision_id)
 
 
-def delete(session: Session, mision: Mision) -> None:
-    session.delete(mision)
-    session.commit()
+    def list_all(self) -> List[Mision]:
+        return self.session.exec(select(Mision)).all()
+
+
+    def update(self, mision: Mision) -> Mision:
+        self.session.add(mision)
+        self.session.commit()
+        self.session.refresh(mision)
+        return mision
+
+
+    def delete(self, mision: Mision) -> None:
+        self.session.delete(mision)
+        self.session.commit()
