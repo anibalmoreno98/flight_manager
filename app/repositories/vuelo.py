@@ -1,6 +1,5 @@
 from typing import List, Optional
 from sqlmodel import Session, select
-
 from app.models.vuelo import Vuelo
 
 class VueloRepository:
@@ -14,14 +13,11 @@ class VueloRepository:
         self.session.refresh(vuelo)
         return vuelo
 
-
     def get(self, vuelo_id: int) -> Optional[Vuelo]:
         return self.session.get(Vuelo, vuelo_id)
 
-
     def list_all(self) -> List[Vuelo]:
         return self.session.exec(select(Vuelo)).all()
-
 
     def update(self, vuelo: Vuelo) -> Vuelo:
         self.session.add(vuelo)
@@ -29,12 +25,10 @@ class VueloRepository:
         self.session.refresh(vuelo)
         return vuelo
 
-
     def delete(self, vuelo: Vuelo) -> None:
         self.session.delete(vuelo)
         self.session.commit()
 
-
     def list_by_piloto(self, piloto_id: int) -> List[Vuelo]:
-        statement = select(Vuelo).where(Vuelo.piloto == piloto_id)
+        statement = select(Vuelo).where(Vuelo.piloto_id == piloto_id)
         return self.session.exec(statement).all()

@@ -15,16 +15,16 @@ def create_mision(mision: Mision, session: Session = Depends(get_sesion)):
 
 @router.get("/", response_model=List[Mision])
 def read_misiones(session: Session = Depends(get_sesion)):
-    return MisionService(session).list_misiones_service(session)
+    return MisionService(session).list_misiones_service()
 
 @router.get("/{mision_id}", response_model=Mision)
 def read_mision(mision_id: int, session: Session = Depends(get_sesion)):
-    return MisionService(session).get_mision_service(mision_id, session)
+    return MisionService(session).get_mision_service(mision_id)
 
 @router.put("/{mision_id}", response_model=Mision)
 def update_mision(mision_id: int, mision: Mision, session: Session = Depends(get_sesion)):
-    return MisionService(session).update_mision_service(mision_id, mision, session)
+    return MisionService(session).update_mision_service(mision_id, mision)
 
 @router.delete("/{mision_id}")
 def delete_mision(mision_id: int, session: Session = Depends(get_sesion)):
-    return MisionService(session).delete_mision_service(mision_id, session)
+    return MisionService(session).delete_mision_service(mision_id)

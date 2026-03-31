@@ -1,7 +1,8 @@
-from sqlmodel import Session
+from sqlmodel import Session, select
 from fastapi import HTTPException
 
 from app.models.usuario import Usuario
+from app.models.mision import Mision
 from app.repositories.usuario import UsuarioRepository
 
 class UsuarioService:
@@ -10,6 +11,16 @@ class UsuarioService:
         self.session = session
         self.repo = UsuarioRepository(session)
 
+    def _validar_usuario_no_asociado(self, usuario_id: int):
+        misiones = self.session.exec(
+            select(Mision).where(Mision.creado_por == usuario_id)
+        ).all()
+
+        if misiones:
+            raise HTTPException(
+                400,
+                "No se puede eliminar un usuario con misiones creadas."
+            )
 
     def create_usuario_service(self, usuario: Usuario) -> Usuario:
         return self.repo.add(usuario)
@@ -17,40 +28,24 @@ class UsuarioService:
     def get_usuario_service(self, usuario_id: int) -> Usuario:
         usuario = self.repo.get(usuario_id)
         if not usuario:
-            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+            raise HTTPException(404, "Usuario no encontrado")
         return usuario
-
 
     def list_usuarios_service(self) -> list[Usuario]:
         return self.repo.list_all()
 
+    def update_usuario_service(self, usuario_id: int, data: Usuario) -> Usuario:
+        usuario = self.get_usuario_service(usuario_id)
 
-    def update_usuario_service(self, usuario_id: int, usuario_data: Usuario) -> Usuario:
-        usuario = self.repo.get(usuario_id)
-        if not usuario:
-            raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-        usuario.nombre = usuario_data.nombre
-        usuario.username = usuario_data.username
+        usuario.nombre = data.nombre
+        usuario.username = data.username
 
         return self.repo.update(usuario)
 
+    def delete_usuario_service(self, usuario_id: int) -> dict[str, bool]:
+        usuario = self.get_usuario_service(usuario_id)
+        self._validar_usuario_no_asociado(usuario_id)
 
-    def update_usuario_service(usuario_id: int, usuario_data: Usuario, session: Session, repo=usuario_repo) -> Usuario:
-        usuario = repo.get(session, usuario_id)
-        if not usuario:
-            raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-        usuario.nombre = usuario_data.nombre
-        usuario.username = usuario_data.username
-
-        return repo.update(session, usuario)
-
-
-    def delete_usuario_service(usuario_id: int, session: Session, repo=usuario_repo) -> dict[str, bool]:
-        usuario = repo.get(session, usuario_id)
-        if not usuario:
-            raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-        repo.delete(session, usuario)
+        self.repo.delete(usuario)
         return {"ok": True}
+

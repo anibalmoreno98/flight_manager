@@ -1,6 +1,5 @@
 from typing import List
 from sqlmodel import Session, select
-
 from app.models.usuario import Usuario
 
 class UsuarioRepository:
@@ -14,14 +13,11 @@ class UsuarioRepository:
         self.session.refresh(usuario)
         return usuario
 
-
     def get(self, usuario_id: int) -> Usuario | None:
         return self.session.get(Usuario, usuario_id)
 
-
     def list_all(self) -> List[Usuario]:
         return self.session.exec(select(Usuario)).all()
-
 
     def update(self, usuario: Usuario) -> Usuario:
         self.session.add(usuario)
@@ -29,7 +25,7 @@ class UsuarioRepository:
         self.session.refresh(usuario)
         return usuario
 
-
     def delete(self, usuario: Usuario) -> None:
         self.session.delete(usuario)
         self.session.commit()
+
