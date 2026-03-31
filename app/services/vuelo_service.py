@@ -63,15 +63,12 @@ class VueloService:
     def update_vuelo_service(self, vuelo_id: int, data: Vuelo) -> Vuelo:
         vuelo = self.get_vuelo_service(vuelo_id)
 
-        # Validar misión activa
         self._validar_mision_activa(vuelo.mision_id)
 
-        # Validar piloto
         piloto = self.session.get(Piloto, data.piloto_id)
         if not piloto:
             raise HTTPException(404, "Piloto no encontrado")
 
-        # Validar aeronave
         aeronave = self.session.get(Aeronave, data.aeronave_id)
         if not aeronave:
             raise HTTPException(404, "Aeronave no encontrada")

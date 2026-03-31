@@ -11,6 +11,10 @@ class UsuarioService:
         self.session = session
         self.repo = UsuarioRepository(session)
 
+    # -------------------------
+    # VALIDACIONES INTERNAS
+    # -------------------------
+
     def _validar_usuario_no_asociado(self, usuario_id: int):
         misiones = self.session.exec(
             select(Mision).where(Mision.creado_por == usuario_id)
@@ -22,8 +26,31 @@ class UsuarioService:
                 "No se puede eliminar un usuario con misiones creadas."
             )
 
+    def _validar_username_unico(self, username: str):
+        existente = self.session.exec(
+            select(Usuario).where(Usuario.username == username)
+        ).first()
+
+        if existente:
+            raise HTTPException(400, "El nombre de usuario ya está en uso.")
+
+    # -------------------------
+    # MÉTODOS PÚBLICOS
+    # -------------------------
+
     def create_usuario_service(self, usuario: Usuario) -> Usuario:
+        self._validar_username_unico(usuario.username)
         return self.repo.add(usuario)
+
+    def login_usuario_service(self, username: str, password: str) -> Usuario:
+        usuario = self.session.exec(
+            select(Usuario).where(Usuario.username == username)
+        ).first()
+
+        if not usuario or usuario.password != password:
+            raise HTTPException(401, "Credenciales inválidas.")
+
+        return usuario
 
     def get_usuario_service(self, usuario_id: int) -> Usuario:
         usuario = self.repo.get(usuario_id)
@@ -37,6 +64,10 @@ class UsuarioService:
     def update_usuario_service(self, usuario_id: int, data: Usuario) -> Usuario:
         usuario = self.get_usuario_service(usuario_id)
 
+        # Validar username único si cambia
+        if data.username != usuario.username:
+            self._validar_username_unico(data.username)
+
         usuario.nombre = data.nombre
         usuario.username = data.username
 
@@ -48,4 +79,3 @@ class UsuarioService:
 
         self.repo.delete(usuario)
         return {"ok": True}
-

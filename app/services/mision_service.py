@@ -94,12 +94,34 @@ class MisionService:
         if data.estado != mision.estado:
             self._validar_transicion_estado(mision.estado, data.estado)
 
+        # 🚨 No permitir iniciar misión sin piloto
+        if data.estado == EstadoMision.EN_CURSO and not data.piloto_id:
+            raise HTTPException(400, "No se puede iniciar una misión sin piloto asignado.")
+
+        # 🚨 No permitir finalizar sin fecha_fin
+        if data.estado == EstadoMision.FINALIZADA and not data.fecha_fin:
+            raise HTTPException(400, "No se puede finalizar una misión sin fecha_fin.")
+
+        # 🚨 No permitir finalizar si no está EN_CURSO
+        if data.estado == EstadoMision.FINALIZADA and mision.estado != EstadoMision.EN_CURSO:
+            raise HTTPException(400, "Solo se puede finalizar una misión en curso.")
+
+        # 🚨 No permitir asignar piloto inexistente
+        if data.piloto_id and not self.session.get(Piloto, data.piloto_id):
+            raise HTTPException(404, "Piloto no encontrado.")
+
+        # 🚨 No permitir asignar aeronave inexistente
+        if data.aeronave_id and not self.session.get(Aeronave, data.aeronave_id):
+            raise HTTPException(404, "Aeronave no encontrada.")
+
+        # Validaciones existentes
         if data.piloto_id:
             self._validar_piloto_disponible(data.piloto_id)
 
         if data.aeronave_id:
             self._validar_aeronave_disponible(data.aeronave_id)
 
+        # Aplicar cambios
         mision.nombre = data.nombre
         mision.descripcion = data.descripcion
         mision.fecha_inicio = data.fecha_inicio

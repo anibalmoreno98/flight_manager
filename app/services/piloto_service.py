@@ -29,10 +29,7 @@ class PilotoService:
         ).all()
 
         if misiones_activas:
-            raise HTTPException(
-                400,
-                "El piloto ya tiene una misión activa."
-            )
+            raise HTTPException(400, "El piloto ya tiene una misión activa.")
 
     def _validar_piloto_no_asociado(self, piloto_id: int):
         misiones = self.session.exec(
