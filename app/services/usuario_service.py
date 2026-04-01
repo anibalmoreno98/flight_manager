@@ -4,6 +4,8 @@ from fastapi import HTTPException
 from app.models.usuario import Usuario
 from app.models.mision import Mision
 from app.repositories.usuario import UsuarioRepository
+from app.security.password import hash_password, verify_password
+from app.security.jwt import create_access_token
 
 class UsuarioService:
 
@@ -40,6 +42,11 @@ class UsuarioService:
 
     def create_usuario_service(self, usuario: Usuario) -> Usuario:
         self._validar_username_unico(usuario.username)
+        usuario.password = hash_password(usuario.password)
+
+        if not usuario.rol:
+            usuario.rol = "usuario"
+
         return self.repo.add(usuario)
 
     def login_usuario_service(self, username: str, password: str) -> Usuario:
@@ -86,8 +93,8 @@ class UsuarioService:
     def login(self, username: str, password: str):
         usuario = self.repo.get_by_username(username)
 
-        if not usuario or usuario.password != password:
+        if not usuario or not verify_password(password, usuario.password):
             raise HTTPException(401, "Credenciales inválidas.")
 
-        # Los tests esperan un access_token
-        return {"access_token": "fake-token-for-tests"}
+        access_token = create_access_token({"sub": usuario.username})
+        return {"access_token": access_token, "token_type": "bearer"}

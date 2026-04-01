@@ -10,3 +10,4 @@ class Usuario(SQLModel, table=True):
     nombre: str
     username: str
     password: str
+    rol: str = Field(default="usuario")
