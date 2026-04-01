@@ -1,5 +1,12 @@
+from datetime import datetime, timedelta
 
+import pytest
 
+from app.models.aeronave import Aeronave
+from app.models.estado_mision import EstadoMision
+from app.models.mision import Mision
+from app.models.vuelo import Vuelo
+from app.services.aeronave_service import AeronaveService
 
 
 def test_crear_aeronave_guarda_en_bd(session):
@@ -21,6 +28,7 @@ def test_crear_aeronave_guarda_en_bd(session):
     assert aeronave_db is not None
     assert aeronave_db.modelo == "737"
 
+
 def test_get_aeronave_por_id(session):
     aeronave = Aeronave(
         fabricante="Airbus",
@@ -40,6 +48,7 @@ def test_get_aeronave_por_id(session):
     assert aeronave_db.id == aeronave.id
     assert aeronave_db.fabricante == "Airbus"
 
+
 def test_listar_aeronaves(session):
     session.add(Aeronave(fabricante="A", modelo="M1", numero_serie="S1", velocidad_maxima=700))
     session.add(Aeronave(fabricante="B", modelo="M2", numero_serie="S2", velocidad_maxima=750))
@@ -50,6 +59,7 @@ def test_listar_aeronaves(session):
     aeronaves = service.list_aeronaves_service()
 
     assert len(aeronaves) == 2
+
 
 def test_actualizar_aeronave(session):
     aeronave = Aeronave(
@@ -77,6 +87,7 @@ def test_actualizar_aeronave(session):
 
     assert aeronave_actualizada.fabricante == "New"
     assert aeronave_actualizada.en_mantenimiento is True
+
 
 def test_no_permite_eliminar_aeronave_con_misiones(session):
     aeronave = Aeronave(
@@ -106,6 +117,7 @@ def test_no_permite_eliminar_aeronave_con_misiones(session):
     with pytest.raises(Exception):
         service.delete_aeronave_service(aeronave.id)
 
+
 def test_no_permite_eliminar_aeronave_con_vuelos(session):
     aeronave = Aeronave(
         fabricante="Test",
@@ -118,11 +130,14 @@ def test_no_permite_eliminar_aeronave_con_vuelos(session):
     session.refresh(aeronave)
 
     vuelo = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="B",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         aeronave_id=aeronave.id,
-        piloto_id=1
+        piloto_id=1,
+        mision_id=1
     )
     session.add(vuelo)
     session.commit()
@@ -131,4 +146,3 @@ def test_no_permite_eliminar_aeronave_con_vuelos(session):
 
     with pytest.raises(Exception):
         service.delete_aeronave_service(aeronave.id)
-

@@ -73,10 +73,14 @@ class VueloService:
         if not aeronave:
             raise HTTPException(404, "Aeronave no encontrada")
 
+        vuelo.nombre = data.nombre
+        vuelo.origen = data.origen
+        vuelo.destino = data.destino
         vuelo.fecha_inicio = data.fecha_inicio
         vuelo.fecha_fin = data.fecha_fin
         vuelo.piloto_id = data.piloto_id
         vuelo.aeronave_id = data.aeronave_id
+        vuelo.mision_id = data.mision_id
 
         return self.repo.update(vuelo)
 

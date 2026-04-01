@@ -41,8 +41,13 @@ class TelemetriaService:
         tele = self.get_telemetria_service(telemetria_id)
         self._validar_mision_activa(tele.vuelo_id)
 
+        tele.latitud = data.latitud
+        tele.longitud = data.longitud
+        tele.altitud = data.altitud
+        tele.velocidad = data.velocidad
         tele.altura_maxima = data.altura_maxima
         tele.velocidad_maxima = data.velocidad_maxima
+        tele.timestamp = data.timestamp
 
         return self.repo.update(tele)
 

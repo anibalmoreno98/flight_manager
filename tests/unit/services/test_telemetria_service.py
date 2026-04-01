@@ -1,4 +1,12 @@
+from datetime import datetime, timedelta
 
+import pytest
+
+from app.models.estado_mision import EstadoMision
+from app.models.mision import Mision
+from app.models.telemetria import Telemetria
+from app.models.vuelo import Vuelo
+from app.services.telemetria_service import TelemetriaService
 
 
 def test_crear_telemetria_guarda_en_bd(session):
@@ -15,9 +23,11 @@ def test_crear_telemetria_guarda_en_bd(session):
     session.commit()
 
     vuelo = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="B",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         piloto_id=1,
         aeronave_id=1,
         mision_id=mision.id
@@ -34,6 +44,8 @@ def test_crear_telemetria_guarda_en_bd(session):
         longitud=20.0,
         altitud=100.0,
         velocidad=50.0,
+        altura_maxima=100,
+        velocidad_maxima=50,
         timestamp=datetime.now()
     )
 
@@ -41,6 +53,7 @@ def test_crear_telemetria_guarda_en_bd(session):
 
     assert tele_creada.id is not None
     assert tele_creada.latitud == 10.0
+
 
 def test_no_permite_crear_telemetria_con_vuelo_inexistente(session):
     service = TelemetriaService(session)
@@ -51,11 +64,14 @@ def test_no_permite_crear_telemetria_con_vuelo_inexistente(session):
         longitud=2.0,
         altitud=3.0,
         velocidad=4.0,
+        altura_maxima=100,
+        velocidad_maxima=50,
         timestamp=datetime.now()
     )
 
     with pytest.raises(Exception):
         service.create_telemetria_service(tele)
+
 
 def test_no_permite_crear_telemetria_en_mision_finalizada(session):
     mision = Mision(
@@ -70,9 +86,11 @@ def test_no_permite_crear_telemetria_en_mision_finalizada(session):
     session.commit()
 
     vuelo = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="B",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         piloto_id=1,
         aeronave_id=1,
         mision_id=mision.id
@@ -89,11 +107,14 @@ def test_no_permite_crear_telemetria_en_mision_finalizada(session):
         longitud=2.0,
         altitud=3.0,
         velocidad=4.0,
+        altura_maxima=100,
+        velocidad_maxima=50,
         timestamp=datetime.now()
     )
 
     with pytest.raises(Exception):
         service.create_telemetria_service(tele)
+
 
 def test_get_telemetria_por_id(session):
     tele = Telemetria(
@@ -102,6 +123,8 @@ def test_get_telemetria_por_id(session):
         longitud=20,
         altitud=100,
         velocidad=50,
+        altura_maxima=100,
+        velocidad_maxima=50,
         timestamp=datetime.now()
     )
     session.add(tele)
@@ -115,9 +138,10 @@ def test_get_telemetria_por_id(session):
     assert tele_db.id == tele.id
     assert tele_db.altitud == 100
 
+
 def test_listar_telemetria(session):
-    session.add(Telemetria(vuelo_id=1, latitud=1, longitud=1, altitud=1, velocidad=1, timestamp=datetime.now()))
-    session.add(Telemetria(vuelo_id=1, latitud=2, longitud=2, altitud=2, velocidad=2, timestamp=datetime.now()))
+    session.add(Telemetria(vuelo_id=1, latitud=1, longitud=1, altitud=1, velocidad=1, altura_maxima=100, velocidad_maxima=50, timestamp=datetime.now()))
+    session.add(Telemetria(vuelo_id=1, latitud=2, longitud=2, altitud=2, velocidad=2, altura_maxima=100, velocidad_maxima=50, timestamp=datetime.now()))
     session.commit()
 
     service = TelemetriaService(session)
@@ -125,6 +149,7 @@ def test_listar_telemetria(session):
     tele = service.list_telemetria_service()
 
     assert len(tele) == 2
+
 
 def test_actualizar_telemetria(session):
     # Crear misión activa y vuelo
@@ -140,9 +165,11 @@ def test_actualizar_telemetria(session):
     session.commit()
 
     vuelo = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="B",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         piloto_id=1,
         aeronave_id=1,
         mision_id=mision.id
@@ -157,6 +184,8 @@ def test_actualizar_telemetria(session):
         longitud=20,
         altitud=100,
         velocidad=50,
+        altura_maxima=100,
+        velocidad_maxima=50,
         timestamp=datetime.now()
     )
     session.add(tele)
@@ -171,6 +200,8 @@ def test_actualizar_telemetria(session):
         longitud=20,
         altitud=200,
         velocidad=80,
+        altura_maxima=100,
+        velocidad_maxima=50,
         timestamp=datetime.now()
     )
 
@@ -178,6 +209,7 @@ def test_actualizar_telemetria(session):
 
     assert tele_actualizada.altitud == 200
     assert tele_actualizada.velocidad == 80
+
 
 def test_no_permite_actualizar_telemetria_en_mision_finalizada(session):
     mision = Mision(
@@ -192,9 +224,11 @@ def test_no_permite_actualizar_telemetria_en_mision_finalizada(session):
     session.commit()
 
     vuelo = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="B",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         piloto_id=1,
         aeronave_id=1,
         mision_id=mision.id
@@ -209,6 +243,8 @@ def test_no_permite_actualizar_telemetria_en_mision_finalizada(session):
         longitud=20,
         altitud=100,
         velocidad=50,
+        altura_maxima=100,
+        velocidad_maxima=50,
         timestamp=datetime.now()
     )
     session.add(tele)
@@ -223,9 +259,10 @@ def test_no_permite_actualizar_telemetria_en_mision_finalizada(session):
         longitud=20,
         altitud=200,
         velocidad=80,
+        altura_maxima=100,
+        velocidad_maxima=50,
         timestamp=datetime.now()
     )
 
     with pytest.raises(Exception):
         service.update_telemetria_service(tele.id, data)
-

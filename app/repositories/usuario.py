@@ -29,3 +29,6 @@ class UsuarioRepository:
         self.session.delete(usuario)
         self.session.commit()
 
+    def get_by_username(self, username: str) -> Usuario | None:
+        statement = select(Usuario).where(Usuario.username == username)
+        return self.session.exec(statement).first()

@@ -1,5 +1,14 @@
+from datetime import datetime, timedelta
 
+import pytest
 
+from app.models.aeronave import Aeronave
+from app.models.estado_mision import EstadoMision
+from app.models.mision import Mision
+from app.models.piloto import Piloto
+from app.models.telemetria import Telemetria
+from app.models.vuelo import Vuelo
+from app.services.vuelo_service import VueloService
 
 
 def test_crear_vuelo_guarda_en_bd(session):
@@ -26,9 +35,11 @@ def test_crear_vuelo_guarda_en_bd(session):
     service = VueloService(session)
 
     vuelo_data = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="B",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         piloto_id=piloto.id,
         aeronave_id=aeronave.id,
         mision_id=mision.id
@@ -38,6 +49,7 @@ def test_crear_vuelo_guarda_en_bd(session):
 
     assert vuelo_creado.id is not None
     assert vuelo_creado.origen == "A"
+
 
 def test_no_permite_crear_vuelo_con_piloto_inexistente(session):
     aeronave = Aeronave(fabricante="X", modelo="Y", numero_serie="SN2", velocidad_maxima=700)
@@ -57,9 +69,11 @@ def test_no_permite_crear_vuelo_con_piloto_inexistente(session):
     service = VueloService(session)
 
     vuelo = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="B",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         piloto_id=9999,  # inexistente
         aeronave_id=aeronave.id,
         mision_id=mision.id
@@ -67,6 +81,7 @@ def test_no_permite_crear_vuelo_con_piloto_inexistente(session):
 
     with pytest.raises(Exception):
         service.create_vuelo_service(vuelo)
+
 
 def test_no_permite_crear_vuelo_con_aeronave_inexistente(session):
     piloto = Piloto(nombre="Test", apellido="Pilot", licencia="LIC002")
@@ -86,9 +101,11 @@ def test_no_permite_crear_vuelo_con_aeronave_inexistente(session):
     service = VueloService(session)
 
     vuelo = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="B",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         piloto_id=piloto.id,
         aeronave_id=9999,  # inexistente
         mision_id=mision.id
@@ -96,6 +113,7 @@ def test_no_permite_crear_vuelo_con_aeronave_inexistente(session):
 
     with pytest.raises(Exception):
         service.create_vuelo_service(vuelo)
+
 
 def test_no_permite_crear_vuelo_en_mision_finalizada(session):
     piloto = Piloto(nombre="Test", apellido="Pilot", licencia="LIC003")
@@ -117,9 +135,11 @@ def test_no_permite_crear_vuelo_en_mision_finalizada(session):
     service = VueloService(session)
 
     vuelo = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="B",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         piloto_id=piloto.id,
         aeronave_id=aeronave.id,
         mision_id=mision.id
@@ -127,6 +147,7 @@ def test_no_permite_crear_vuelo_en_mision_finalizada(session):
 
     with pytest.raises(Exception):
         service.create_vuelo_service(vuelo)
+
 
 def test_actualizar_vuelo(session):
     piloto = Piloto(nombre="A", apellido="B", licencia="LIC004")
@@ -146,9 +167,11 @@ def test_actualizar_vuelo(session):
     session.commit()
 
     vuelo = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="B",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         piloto_id=piloto.id,
         aeronave_id=aeronave.id,
         mision_id=mision.id
@@ -160,9 +183,11 @@ def test_actualizar_vuelo(session):
     service = VueloService(session)
 
     data = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="C",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         piloto_id=piloto.id,
         aeronave_id=aeronave.id,
         mision_id=mision.id
@@ -171,6 +196,7 @@ def test_actualizar_vuelo(session):
     vuelo_actualizado = service.update_vuelo_service(vuelo.id, data)
 
     assert vuelo_actualizado.destino == "C"
+
 
 def test_no_permite_eliminar_vuelo_con_telemetria(session):
     piloto = Piloto(nombre="A", apellido="B", licencia="LIC005")
@@ -190,9 +216,11 @@ def test_no_permite_eliminar_vuelo_con_telemetria(session):
     session.commit()
 
     vuelo = Vuelo(
+        nombre="Vuelo Test",
         origen="A",
         destino="B",
-        fecha=datetime.now(),
+        fecha_inicio=datetime.now(),
+        fecha_fin=datetime.now() + timedelta(hours=1),
         piloto_id=piloto.id,
         aeronave_id=aeronave.id,
         mision_id=mision.id
@@ -207,6 +235,8 @@ def test_no_permite_eliminar_vuelo_con_telemetria(session):
         longitud=20.0,
         altitud=100.0,
         velocidad=50.0,
+        altura_maxima=100,
+        velocidad_maxima=50,
         timestamp=datetime.now()
     )
     session.add(tele)
@@ -216,4 +246,3 @@ def test_no_permite_eliminar_vuelo_con_telemetria(session):
 
     with pytest.raises(Exception):
         service.delete_vuelo_service(vuelo.id)
-
